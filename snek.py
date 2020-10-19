@@ -36,3 +36,10 @@ def temp_loop():
         raise error
 
     time.sleep(2.0)
+
+def main():
+  init_sensor(4,14)
+  temp(loop)
+
+if __name__ == "__main__":
+  main()
