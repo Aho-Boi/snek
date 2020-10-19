@@ -9,13 +9,13 @@ def callback(channel):
         else:
                 print("LED on")
 
-GPIO.setmode(GPIO.BCM)
+def init_moist(pin):
+  GPIO.setmode(GPIO.BCM)
+  channel = pin
+  GPIO.setup(channel, GPIO.IN)
 
-channel = 17
-GPIO.setup(channel, GPIO.IN)
-
-GPIO.add_event_detect(channel, GPIO.BOTH, bouncetime=300)
-GPIO.add_event_callback(channel, callback)
-
-while True:
+def launch_moist():
+  GPIO.add_event_detect(channel, GPIO.BOTH, bouncetime=300)
+  GPIO.add_event_callback(channel, callback)
+  while True:
         time.sleep(0.1)
