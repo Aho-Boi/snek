@@ -12,7 +12,6 @@ BUZZER_GPIO = 12
 dhtDevice = adafruit_dht.DHT11(board.D18)
 
 def toggle_lamp():
-    print(GPIO.input(RELAIS_1_GPIO))
     if GPIO.input(RELAIS_1_GPIO) == GPIO.LOW:
         GPIO.output(RELAIS_1_GPIO, GPIO.HIGH)
     else:
