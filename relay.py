@@ -11,8 +11,8 @@ def init_relay(pin):
   GPIO.setup(RELAIS_1_GPIO, GPIO.OUT) # GPIO Assign mode
   GPIO.setwarnings(False)
 
-def switch_lamp(var)
+def switch_lamp(var):
   if(var):
     GPIO.output(RELAIS_1_GPIO, GPIO.HIGH) #on
-  else:  
+  else:
     GPIO.output(RELAIS_1_GPIO, GPIO.LOW) # out

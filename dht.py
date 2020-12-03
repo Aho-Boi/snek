@@ -4,7 +4,7 @@ import adafruit_dht
 
 # Initial the dht device, with data pin connected to:
 def init_dht():
-  dhtDevice = adafruit_dht.DHT11(board.D18)
+  return adafruit_dht.DHT11(board.D18)
 
 # you can pass DHT22 use_pulseio=False if you wouldn't like to use pulseio.
 # This may be necessary on a Linux single board computer like the Raspberry Pi,
