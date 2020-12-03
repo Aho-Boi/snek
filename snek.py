@@ -1,73 +1,61 @@
 #!/bin/env python3
-from dht import *
-# from moisture import *
 
 import time
+import sys
 import board
 import adafruit_dht
+import argparse
 import RPi.GPIO as GPIO
 
-dhtDevice = adafruit_dht.DHT11(board.D18)
-GPIO.setmode(GPIO.BCM) # GPIO Numbers instead of board numbers
-
 RELAIS_1_GPIO = 4
-GPIO.setup(RELAIS_1_GPIO, GPIO.OUT) # GPIO Assign mode
+BUZZER_GPIO = 12
+dhtDevice = adafruit_dht.DHT11(board.D18)
 
-BUZZER_PIN = 12
-GPIO.setup(BUZZER_PIN, GPIO.OUT)
-GPIO.output(BUZZER_PIN, GPIO.HIGH) #on
-
-def switch_lamp(var):
-  if(var):
-    GPIO.output(RELAIS_1_GPIO, GPIO.HIGH) #on
-  else:
-    GPIO.output(RELAIS_1_GPIO, GPIO.LOW) # out
-
-def init_sensor(pin_relay,pin_moist):
-    pass
-    # dhtDevice = init_dht()
-    #init_moist(pin_moist)
+def toggle_lamp():
+    print(GPIO.input(RELAIS_1_GPIO))
+    if GPIO.input(RELAIS_1_GPIO) == GPIO.LOW:
+        GPIO.output(RELAIS_1_GPIO, GPIO.HIGH)
+    else:
+        GPIO.output(RELAIS_1_GPIO, GPIO.LOW)
 
 def buzz():
-    print("buzzed")
-    GPIO.output(BUZZER_PIN, GPIO.LOW) # out
+    GPIO.output(BUZZER_GPIO, GPIO.LOW)
     time.sleep(0.1)
-    GPIO.output(BUZZER_PIN, GPIO.HIGH) #on
+    GPIO.output(BUZZER_GPIO, GPIO.HIGH)
 
-buzzed = False
-def launch_lamp(temp):
-    global buzzed
-    if (temp <= 40):
-        switch_lamp(True)
-        buzzed = False
-    else :
-        switch_lamp(False)
-        if not buzzed:
-            buzz()
-            buzzed = True
+def get_temp():
+    return dhtDevice.temperature
 
-def temp_loop():
-  while True:
-    try:
-        temperature_c = dhtDevice.temperature
-        humidity = dhtDevice.humidity
-        print(f"Temp: {temperature_c:.1f} c\tHumidity: {humidity}%\t{buzzed}")
-        launch_lamp(humidity)
+def get_humidity():
+    return dhtDevice.humidity
 
-    except RuntimeError as error:
-        # Errors happen fairly often, DHT's are hard to read, just keep going
-        print(error.args[0])
-        time.sleep(2.0)
-        continue
-    except Exception as error:
-        # dhtDevice.exit()
-        raise error
+def create_parser():
+    parser = argparse.ArgumentParser(description="Give infos about GPIOS status")
+    parser.add_argument("-t", "--temperature", action="store_true",
+            help="Give the temperature")
+    parser.add_argument("-u", "--humidity", action="store_true",
+            help="Give the humidity")
+    parser.add_argument("-l", "--toggle_lamp", action="store_true",
+            help="Toggle the lamp")
+    parser.add_argument("-b", "--buzz", action="store_true",
+            help="Give the buzz")
+    return parser
 
-    time.sleep(2.0)
+def main(argv):
+    GPIO.setmode(GPIO.BCM) # GPIO Numbers instead of board numbers
+    GPIO.setup(RELAIS_1_GPIO, GPIO.OUT) # GPIO Assign mode
+    GPIO.setup(BUZZER_GPIO, GPIO.OUT)
+    GPIO.output(BUZZER_GPIO, GPIO.HIGH) # Default as High
 
-def main():
-  init_sensor(4,14)
-  temp_loop()
+    args = create_parser().parse_args(argv[1:])
+    if args.temperature:
+        print(get_temp())
+    if args.humidity:
+        print(get_humidity())
+    if args.toggle_lamp:
+        toggle_lamp()
+    if args.buzz:
+        buzz()
 
 if __name__ == "__main__":
-  main()
+  main(sys.argv)
