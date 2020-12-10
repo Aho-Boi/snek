@@ -1,0 +1,10 @@
+[Unit]
+Description=My home snek service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/snek/webserver
+ExecStart=/usr/bin/python3 app.py
+Restart=on-failure
+
