@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h3> Temperature: {{ get_temp() }} </h3>
+<br />
+<h3> Humidité: {{ get_humidity() }} </h3>
+<br />
+<button onclick="location.reload(true);">Refresh</button>
+<button onclick="fetch('/toggle_lamp');fetch('/buzz');location.reload(true);">Toggle la lampe</button>
+<button id=lamp style="background-color: red;">Eteint</button>
+<script>
+window.addEventListener('load', function() {
+    fetch('/status').then(response => {
+        response.text().then(txt => {
+            if (txt === "1") {
+                document.getElementById("lamp").innerText = "Allumé"
+                document.getElementById("lamp").style = "background-color: green;"
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

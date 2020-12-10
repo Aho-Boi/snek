@@ -11,12 +11,15 @@ RELAIS_1_GPIO = 4
 BUZZER_GPIO = 12
 dhtDevice = adafruit_dht.DHT11(board.D18)
 
+def lamp_status():
+    return GPIO.input(RELAIS_1_GPIO)
+
 def toggle_lamp():
-    print(GPIO.input(RELAIS_1_GPIO))
     if GPIO.input(RELAIS_1_GPIO) == GPIO.LOW:
         GPIO.output(RELAIS_1_GPIO, GPIO.HIGH)
     else:
         GPIO.output(RELAIS_1_GPIO, GPIO.LOW)
+    return GPIO.input(RELAIS_1_GPIO)
 
 def buzz():
     GPIO.output(BUZZER_GPIO, GPIO.LOW)
@@ -41,11 +44,14 @@ def create_parser():
             help="Give the buzz")
     return parser
 
-def main(argv):
+
+def setup():
     GPIO.setmode(GPIO.BCM) # GPIO Numbers instead of board numbers
     GPIO.setup(RELAIS_1_GPIO, GPIO.OUT) # GPIO Assign mode
     GPIO.setup(BUZZER_GPIO, GPIO.OUT)
     GPIO.output(BUZZER_GPIO, GPIO.HIGH) # Default as High
+
+def main(argv):
 
     args = create_parser().parse_args(argv[1:])
     if args.temperature:
